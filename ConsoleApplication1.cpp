@@ -2,142 +2,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include "Player.h"
 using namespace std;
-
-class Player
-{
-private:
-	int health;
-	int exp;
-	int lvl;
-	int dmg;
-	int hitChance;
-	int defChance;
-	int parChance;
-	//vector<vector<int>>eqipment;
-public:
-	Player()
-	{
-		this->health = 100;
-		this->exp = 0;
-		this->dmg = 10;
-		this->lvl = 1;
-		this->hitChance = 50;
-		this->defChance = 50;
-		this->parChance = 15;
-		//eqipment.assign(3, vector<int>(5));
-	}
-
-	Player(int health, int exp, int dmg, int lvl, int hitChance, int defChance, int parChance)
-	{
-		this->health = health;
-		this->exp = health;
-		this->dmg = dmg;
-		this->lvl = lvl;
-		this->hitChance = hitChance;
-		this->defChance = defChance;
-		this->parChance = parChance;
-		/*if (lvl > 1)
-		{
-			this->hitChance = hitChance + lvl * 2;
-			this->defChance = defChance + lvl * 2;
-			this->parChance = parChance + lvl * 2;
-		}*/
-		//eqipment.assign(3, vector<int>(5));
-	}
-	int getHealth()
-	{
-		return health;
-	}
-	int getHitChance()
-	{
-		return hitChance;
-	}
-
-	int getDefChance()
-	{
-		return defChance;
-	}
-
-	int getParChance()
-	{
-		return parChance;
-	}
-
-	int getDamage()
-	{
-		return dmg;
-	}
-
-	void showStats()
-	{
-		cout << "Health: " << this->health;
-		cout << "\nExperience: " << this->exp;
-		cout << "\nDamage: " << this->dmg;
-		cout << "\nLevel: " << this->lvl;
-		cout << "\nHit Chance: " << this->hitChance;
-		cout << "\nDefence Chance: " << this->defChance;
-		cout << "\nParry Chance: " << this->parChance;
-		cout << endl;
-	}
-
-	void loadPr()
-	{
-		ifstream profile("profile.txt");
-		profile >> this->health;
-		profile >> this->exp;
-		profile >> this->dmg;
-		profile >> this->lvl;
-		profile >> this->hitChance;
-		profile >> this->defChance;
-		profile >> this->parChance;
-	}
-	void savePr()
-	{
-		ofstream profile("profile.txt");
-		profile << this->health << endl;
-		profile << this->exp << endl;
-		profile << this->dmg << endl;
-		profile << this->lvl << endl;
-		profile << this->hitChance << endl;
-		profile << this->defChance << endl;
-		profile << this->parChance << endl;
-	}
-
-	void expCt(int exp)
-	{
-		this->exp += exp;
-		if (this->exp >= 100 && this->exp <= 199)
-		{
-			this->lvl++;
-			this->exp -= 100;
-			upgSp();
-			expCt(exp);
-		}
-		else
-		{
-			return;
-		}
-	}
-
-	void upgSp()
-	{
-		cout << "you have reached new level!\n";
-		cout << "choose one from stats to upgrade!\n";
-		cout << "Hit Chance - 1\n Defence Chance - 2\n Parry Chance - 3\n";
-		int x;
-		cin >> x;
-		if (x == 1)
-			this->hitChance += 2;
-		if (x == 2)
-			this->defChance += 2;
-		if (x == 3)
-			this->parChance += 2;
-		else
-			cout << "wrong symbol!\n";
-	}
-};
-
 
 bool try_chance()
 {
@@ -162,7 +29,7 @@ public:
 		int tmpBh = bot.getHealth();
 		bool tmpBCh;
 		bool tmpBCh2;
-		bool res;
+		//bool res;
 		while (tmpBh >= 0 || tmpPh >= 0)
 		{
 			system("cls");
@@ -333,11 +200,13 @@ public:
 			return true;
 	}
 
+	~Game() {}
 };
 
 void StartMenu()
 {
 	Player player, bot;
+	Item inv;
 	cout << "Hello! Welcome to the game!\n";
 	cout << "If you already have account write 'p'\n";
 	cout << "If you never played write 'c'\n";
@@ -346,6 +215,7 @@ void StartMenu()
 	if (tp == 'p')
 	{
 		player.loadPr();
+		inv.loadInv(player);
 		cout << "loaded!\n";
 		bot = player;
 		system("pause");
@@ -360,35 +230,42 @@ void StartMenu()
 		cout << "wrong symbol!\n";
 		return;
 	}
-	int x = 0;
-	while (x <= 4)
+	char x = '0';
+	while (x >= '0')
 	{
 		system("cls");
 		cout << "Start duel - '1'\n";
 		cout << "Show stats - '2'\n";
-		cout << "Save progress - '3'\n";
-		cout << "Quit - '4'\n";
+		cout << "Show inventory - '3'\n";
+		cout << "Save progress - '4'\n";
+		cout << "Quit - '5'\n";
 		cin >> x;
-		if (x == 1)
+		if (x == '1')
 		{
 			Game game;
 			game.GamePr(player, bot);
 			x = 0;
 		}
-		else if (x == 2)
+		else if (x == '2')
 		{
 			player.showStats();
 			x = 0;
 			system("pause");
 		}
-		else if (x == 3) 
+		else if (x == '3')
+		{
+			player.showInv();
+			x = 0;
+			system("pause");
+		}
+		else if (x == '4') 
 		{
 			player.savePr();
 			cout << "saved!\n";
 			x = 0;
 			system("pause");
 		}
-		else if (x == 4)
+		else if (x == '5')
 		{
 			return;
 		}
